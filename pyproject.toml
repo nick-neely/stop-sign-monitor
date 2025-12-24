@@ -1,0 +1,73 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stop-sign-monitor"
+version = "1.0.0"
+description = "Computer vision system for monitoring stop sign compliance and detecting rolling stops from video files or live streams"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Nick Neely", email = "nick@neelysolutions.com"},
+]
+keywords = ["computer-vision", "traffic-monitoring", "stop-sign", "rolling-stop", "yolo", "opencv", "object-tracking", "traffic-compliance"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "opencv-python>=4.8.0",
+    "numpy>=1.24.0",
+    "ultralytics>=8.0.0",
+]
+
+[project.optional-dependencies]
+hf = [
+    "huggingface-hub>=0.16.0",
+]
+
+[project.scripts]
+stop-sign-monitor = "traffic_monitor.traffic_sim:main"
+
+[project.urls]
+Homepage = "https://github.com/nick-neely/stop-sign-monitor"
+Documentation = "https://github.com/nick-neely/stop-sign-monitor#readme"
+Repository = "https://github.com/nick-neely/stop-sign-monitor"
+Issues = "https://github.com/nick-neely/stop-sign-monitor/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311', 'py312']
+include = '\.pyi?$'
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+

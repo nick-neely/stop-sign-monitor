@@ -1,0 +1,9 @@
+# Core dependencies for stop-sign-monitor
+opencv-python>=4.8.0
+numpy>=1.24.0
+ultralytics>=8.0.0
+
+# Optional: For downloading models from Hugging Face
+# Uncomment if you want to use Hugging Face model downloads
+# huggingface-hub>=0.16.0
+

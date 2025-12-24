@@ -1,0 +1,21 @@
+# Include README and documentation
+include README.md
+include LICENSE
+include X11_SETUP.md
+include requirements.txt
+include requirements-dev.txt
+include pyproject.toml
+
+# Include package data
+recursive-include src/traffic_monitor *.py
+
+# Exclude compiled Python files
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude *$py.class
+
+# Exclude large files (models and videos should be downloaded separately)
+prune models
+prune data/videos
+prune data/output
+
