@@ -147,7 +147,8 @@ cython_debug/
 # Model files (too large for git, users should download separately)
 models/*.pt
 !models/.gitkeep
-
+data/zone.json
+data/cookies.txt
 # Output files
 data/output/*
 !data/output/.gitkeep

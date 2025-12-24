@@ -108,7 +108,7 @@ stop-sign-monitor/
 1.  Clone the repository and navigate to the project root:
 
     ```bash
-    git clone https://github.com/yourusername/stop-sign-monitor.git
+    git clone https://github.com/nick-neely/stop-sign-monitor.git
     cd stop-sign-monitor
     ```
 
@@ -135,6 +135,12 @@ stop-sign-monitor/
 
     ```bash
     pip install -e ".[hf]"
+    ```
+
+    Optional: For YouTube live streams, install the streaming extras:
+
+    ```bash
+    pip install -e ".[stream]"
     ```
 
 #### Option 2: Install as Package
@@ -175,6 +181,10 @@ pip install -r requirements-dev.txt
     ```bash
     stop-sign-monitor
     ```
+    To analyze a different file:
+    ```bash
+    python traffic_sim.py --video-path /path/to/video.mp4
+    ```
 4.  **Calibration:**
     - The script will pause on the first frame.
     - Click four points to define the "Stop Zone" on the road surface.
@@ -183,7 +193,113 @@ pip install -r requirements-dev.txt
 
 #### Using Live Streams
 
-_Note: Live stream support (YouTube, RTSP, camera feeds) is planned for future releases. The current version supports video file analysis._
+Provide a live stream URL (YouTube, RTSP, HLS, or direct camera feed):
+
+```bash
+python traffic_sim.py --stream-url "https://www.youtube.com/watch?v=YOUR_LIVE_ID"
+```
+
+If the live stream is laggy, try lowering the quality (threaded capture is enabled by default for live streams):
+
+```bash
+python traffic_sim.py --stream-url "https://www.youtube.com/watch?v=YOUR_LIVE_ID" \
+  --stream-quality 480
+```
+
+To disable threaded capture (not recommended for live streams):
+
+```bash
+python traffic_sim.py --stream-url "https://www.youtube.com/watch?v=YOUR_LIVE_ID" \
+  --no-threaded-capture
+```
+
+You can also override the yt-dlp format selector directly:
+
+```bash
+python traffic_sim.py --stream-url "https://www.youtube.com/watch?v=YOUR_LIVE_ID" \
+  --yt-format "best[height<=360]"
+```
+
+For RTSP or HLS sources:
+
+```bash
+python traffic_sim.py --stream-url "rtsp://user:pass@camera.example/live"
+```
+
+#### MJPEG Preview (Browser)
+
+You can expose a lightweight MJPEG preview to view in a browser:
+
+```bash
+python traffic_sim.py --stream-url "https://www.youtube.com/watch?v=YOUR_LIVE_ID" --mjpeg-port 8080
+```
+
+Open `http://localhost:8080/` in your browser.
+
+To run without the OpenCV window, save the stop zone once and reuse it:
+
+```bash
+python traffic_sim.py --video-path data/videos/traffic_test.mp4 --save-zone data/zone.json
+python traffic_sim.py --stream-url "https://www.youtube.com/watch?v=YOUR_LIVE_ID" \
+  --zone-file data/zone.json --no-display --mjpeg-port 8080
+```
+
+#### FFmpeg Relay (Lower Latency)
+
+For smoother YouTube live playback, you can relay the stream through ffmpeg and read frames from the ffmpeg pipe:
+
+1. Install ffmpeg where Python runs:
+   - **WSL2 (Ubuntu):** `sudo apt update && sudo apt install -y ffmpeg`
+   - **Windows Python:** install ffmpeg for Windows and ensure `ffmpeg` is on PATH.
+
+2. Run with the relay enabled (optionally lower the stream quality):
+
+```bash
+python traffic_sim.py --stream-url "https://www.youtube.com/watch?v=YOUR_LIVE_ID" \
+  --ffmpeg-relay --stream-quality 480 --no-display --mjpeg-port 8080
+```
+
+If the relay reports "Output file does not contain any stream", try forcing a video-only stream:
+
+```bash
+python traffic_sim.py --stream-url "https://www.youtube.com/watch?v=YOUR_LIVE_ID" \
+  --ffmpeg-relay --yt-format "bestvideo[height<=480]" --no-display --mjpeg-port 8080
+```
+
+Optional relay tuning:
+
+```bash
+python traffic_sim.py --stream-url "https://www.youtube.com/watch?v=YOUR_LIVE_ID" \
+  --ffmpeg-relay --ffmpeg-fps 15 --ffmpeg-scale 0.6 --no-display --mjpeg-port 8080
+```
+
+If the relay appears frozen, force a specific YouTube format ID (from `yt-dlp -F`):
+
+```bash
+python traffic_sim.py --stream-url "https://www.youtube.com/watch?v=YOUR_LIVE_ID" \
+  --ffmpeg-relay --yt-format "94" --no-display --mjpeg-port 8080
+```
+
+If you need more diagnostics from ffmpeg:
+
+```bash
+python traffic_sim.py --stream-url "https://www.youtube.com/watch?v=YOUR_LIVE_ID" \
+  --ffmpeg-relay --ffmpeg-loglevel info --no-display --mjpeg-port 8080
+```
+
+If the stream still fails with repeated HLS EOFs, it may require cookies. You can pass a cookies file:
+
+```bash
+python traffic_sim.py --stream-url "https://www.youtube.com/watch?v=YOUR_LIVE_ID" \
+  --ffmpeg-relay --yt-cookies /path/to/cookies.txt --no-display --mjpeg-port 8080
+```
+
+Or load cookies directly from a browser profile:
+
+```bash
+python traffic_sim.py --stream-url "https://www.youtube.com/watch?v=YOUR_LIVE_ID" \
+  --ffmpeg-relay --yt-cookies-from-browser chrome --no-display --mjpeg-port 8080
+```
 
 ### Output
 

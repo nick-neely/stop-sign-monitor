@@ -7,3 +7,5 @@ ultralytics>=8.0.0
 # Uncomment if you want to use Hugging Face model downloads
 # huggingface-hub>=0.16.0
 
+# Optional: For resolving YouTube live stream URLs
+# yt-dlp>=2023.10.13
